@@ -1,57 +1,83 @@
 import React from 'react';
+import css from './app.module.css';
+
 import { CheckboxGroup } from './common';
 import { GENDER_STATUSES, genderOptions } from './constants';
 import { Modal } from './Modal';
+import { ModalCtx } from './Ctx';
 //import { ErrorBoundary } from './ErrorBoundary';
 
 
 export class App extends React.Component {
     state = {
-        login: '',
-        password: '',
+        users: {
+            login: '',
+            password: '',
+        },
+        errors: {
+            login: '',
+            password: '',
+        },
         choice: GENDER_STATUSES.MALE,
         isModalVisible: false,
-    }
+    };
 
+    inputChangeHandler = (e) => {
+        this.setState((prevState) => ({
+            users: {
+                ...prevState.users,
+                [e.target.name]: e.target.value
+            },
+            errors: {
+                ...prevState.errors,
+                [e.target.name]: ''
+            },
+        }));
+    }; 
 
     changeChoiceHandler = (e) => {
         this.setState({ choice: e.target.value });
-    }
+    };
 
-    dengerError = () => {
-        if (this.state.login.length < 5) {
-            return <h3>Минимальная длинна поля 5 символов</h3>;
-                }
-        return this.setState({ isModalVisible: true }) 
-    }
+    clickHandler = () => {
+        const isValid = this.state.users.login.length > 4 && this.state.users.password.length > 5;
+
+        this.setState((prevState) => ({
+            isModalVisible: isValid,
+            errors: {
+                login: this.state.users.login.length > 4 ? "" : 'Коротко',
+                password: this.state.users.password.length > 4 ? "" : 'Коротко',
+            }
+        }))
+    };
 
     render () {
-        const { login, password, choice } = this.state;
-
-        return <div>
+        return <div className={css.app}>
             <h1>SIGN UP</h1>
-            <form>
-                <label>
-                    Login:
-                    <input type="text" value={login} onChange={(e) => this.setState({ login: e.target.value })} />
-                </label>
-                {this.state.login && <span>Минимальная длинна поля 5 символов</span>}
-                <label>
-                    Password:
-                    <input type="Password" value={password} onChange={(e) => this.setState({ password: e.target.value })} />
-                </label>
-                {this.state.password && <span>Минимальная длинна поля 5 символов</span>}
-                <h4>Gender</h4>
+            <ModalCtx.Provider value={this.state}>
+                <form className={css.form}>
+                    <label>
+                        Login:
+                        <input type='text' name='login' value={this.state.login} onChange={this.inputChangeHandler} />
+                    </label>
+                    {this.state.errors.login && <span>Минимальная длинна поля 5 символов</span>}
+                    <label>
+                        Password:
+                        <input type='Password' name='password' value={this.state.password} onChange={this.inputChangeHandler} />
+                    </label>
+                    {this.state.errors.password && <span>Минимальная длинна поля 5 символов</span>}
+                </form>
+                <div>Gender</div>
                 <div>
-                    <CheckboxGroup options={genderOptions} value={choice} onChange={this.changeChoiceHandler} />
+                    <CheckboxGroup options={genderOptions} value={this.state.choice} onChange={this.changeChoiceHandler} />
                 </div>
                 <label>
-                    <input type="checkbox" name="news" />
+                    <input type="checkbox" name="news" defaultChecked />
                     I want to receive newsletters
                 </label>
-                <button type="button" onClick={this.dengerError}>GET STARTED</button>
+                <button type="button" onClick={this.clickHandler}>GET STARTED</button>
                 {this.state.isModalVisible && <Modal />}
-            </form>
+            </ModalCtx.Provider>
         </div>
     }
 }
