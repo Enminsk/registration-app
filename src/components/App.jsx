@@ -5,7 +5,6 @@ import { CheckboxGroup } from './common';
 import { GENDER_STATUSES, genderOptions } from './constants';
 import { Modal } from './Modal';
 import { ModalCtx } from './Ctx';
-//import { ErrorBoundary } from './ErrorBoundary';
 
 
 export class App extends React.Component {
@@ -21,6 +20,8 @@ export class App extends React.Component {
         choice: GENDER_STATUSES.MALE,
         isModalVisible: false,
     };
+
+
 
     inputChangeHandler = (e) => {
         this.setState((prevState) => ({
@@ -51,6 +52,10 @@ export class App extends React.Component {
         }))
     };
 
+    modalCloseHandler = () => {
+        this.setState({ isModalVisible: false })
+    };
+
     render () {
         return <div className={css.app}>
             <h1>SIGN UP</h1>
@@ -60,25 +65,28 @@ export class App extends React.Component {
                         Login:
                         <input type='text' name='login' value={this.state.login} onChange={this.inputChangeHandler} />
                     </label>
-                    {this.state.errors.login && <span>Минимальная длинна поля 5 символов</span>}
+                    {this.state.errors.login && <span className={css.error}>Минимальная длинна поля 5 символов</span>}
+                    <br/>
                     <label>
                         Password:
                         <input type='Password' name='password' value={this.state.password} onChange={this.inputChangeHandler} />
                     </label>
-                    {this.state.errors.password && <span>Минимальная длинна поля 5 символов</span>}
+                    {this.state.errors.password && <span className={css.error}>Минимальная длинна поля 5 символов</span>}
                 </form>
-                <div>Gender</div>
+                <h3>Gender</h3>
                 <div>
                     <CheckboxGroup options={genderOptions} value={this.state.choice} onChange={this.changeChoiceHandler} />
                 </div>
+                <br/>
                 <label>
                     <input type="checkbox" name="news" defaultChecked />
                     I want to receive newsletters
                 </label>
+                <br />
                 <button type="button" onClick={this.clickHandler}>GET STARTED</button>
-                {this.state.isModalVisible && <Modal />}
+                {this.state.isModalVisible && <Modal onClose={this.modalCloseHandler}/>}
             </ModalCtx.Provider>
         </div>
     }
-}
+};
 

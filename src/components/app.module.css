@@ -9,5 +9,10 @@
     justify-content: center;
     flex-direction: column;
     align-items: center;
+}
 
+.error {
+    color: red;
+    font-size: 18px;
+    font-weight: 400;
 }
